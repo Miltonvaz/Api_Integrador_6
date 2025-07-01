@@ -23,7 +23,7 @@ func (m *MySQL) Save(sensor entities.TurbiditySensor) (entities.TurbiditySensor,
 		sensor.Timestamp = time.Now()
 	}
 
-	query := `INSERT INTO turbidity_sensor (user_id, timestamp, turbidity, output_voltage) VALUES (?, ?, ?)`
+	query := `INSERT INTO turbidity_sensor (user_id, timestamp, turbidity) VALUES (?, ?, ?)`
 	_, err := m.conn.Exec(query, sensor.UserID, sensor.Timestamp, sensor.Turbidity)
 	if err != nil {
 		return entities.TurbiditySensor{}, fmt.Errorf("error saving turbidity sensor data: %v", err)

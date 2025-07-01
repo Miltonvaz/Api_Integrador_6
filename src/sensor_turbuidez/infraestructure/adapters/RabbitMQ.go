@@ -52,7 +52,7 @@ func NewRabbitMQAdapter() (*RabbitMQAdapter, error) {
 
 func declareQueue(ch *amqp.Channel) error {
 	_, err := ch.QueueDeclare(
-		"sesnsor.temperatura",
+		"sesnsor.turbidity",
 		true,
 		false,
 		false,
@@ -75,7 +75,7 @@ func (r *RabbitMQAdapter) PublishEvent(eventType string, data entities.Turbidity
 
 	err = r.ch.Publish(
 		"",
-		"sesnsor.temperatura",
+		"sesnsor.turbidity",
 		true,
 		false,
 		amqp.Publishing{

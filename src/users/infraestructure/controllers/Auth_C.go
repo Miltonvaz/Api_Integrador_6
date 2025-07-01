@@ -34,5 +34,6 @@ func (ac *AuthController) Execute(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token":  response["token"],
 		"userId": response["userId"],
+		"role":   response["role"],
 	})
 }

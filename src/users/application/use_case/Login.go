@@ -32,6 +32,7 @@ func (as *AuthService) Login(email, password string) (map[string]interface{}, er
 	return map[string]interface{}{
 		"token":  token,
 		"userId": client.ID,
+		"role":   client.Role,
 	}, nil
 }
 

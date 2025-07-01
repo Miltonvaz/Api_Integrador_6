@@ -24,7 +24,7 @@ func (m *MySQL) Save(sensor entities.TemperatureSensor) (entities.TemperatureSen
 		sensor.Timestamp = time.Now()
 	}
 
-	query := `INSERT INTO temperature_sensor (user_id, timestamp, temperature, sensor_accuracy) VALUES (?, ?, ?)`
+	query := `INSERT INTO temperature_sensor (user_id, timestamp, temperature) VALUES (?, ?, ?)`
 	_, err := m.conn.Exec(query, sensor.UserID, sensor.Timestamp, sensor.Temperature)
 	if err != nil {
 		return entities.TemperatureSensor{}, fmt.Errorf("error saving temperature sensor data: %v", err)

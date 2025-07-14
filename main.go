@@ -1,7 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+	"time"
+
 	"Integrador/src/core"
+	"Integrador/src/fermentation/infraestructure/dependencies_f"
+	"Integrador/src/fermentation/infraestructure/routes_f"
 	"Integrador/src/motor/infraestructure/dependencies_m"
 	"Integrador/src/motor/infraestructure/routes_m"
 	"Integrador/src/sensor_alcohol/infraestructure/dependencies_a"
@@ -18,10 +24,9 @@ import (
 	"Integrador/src/sensor_turbuidez/infraestructure/routes_t"
 	"Integrador/src/users/infraestructure/dependencies_u"
 	"Integrador/src/users/infraestructure/routes_u"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"log"
-	"time"
 )
 
 func startServer() {
@@ -42,6 +47,13 @@ func startServer() {
 		log.Fatalf("Error al inicializar dependencias: %v", err)
 		return
 	}
+
+	go func() {
+		time.Sleep(2 * time.Minute)
+		log.Println("Tiempo límite alcanzado. Cerrando servidor para reinicio...")
+		os.Exit(0)
+	}()
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Error en el servidor: %v", err)
 	}
@@ -97,6 +109,12 @@ func initializeDependencies(router *gin.Engine) error {
 		return err
 	}
 	routes_u.RegisterClientRoutes(router, createUserC, viewUserC, editUserC, deleteUserC, viewByIdUserC, loginC)
+
+	fermentCreateC, fermentByID, fermentAll, fermentDel, fermentUpdateC, _, err := dependencies_f.Init(pool)
+	if err != nil {
+		return err
+	}
+	routes_f.RegisterFermentationRoutes(router, fermentCreateC, fermentByID, fermentAll, fermentDel, fermentUpdateC)
 
 	return nil
 }

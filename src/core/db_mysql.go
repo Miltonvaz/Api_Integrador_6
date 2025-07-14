@@ -30,7 +30,7 @@ func GetDBPool() *Conn_MySQL {
 		log.Fatalf("Error: Faltan variables de entorno. Verifica tu .env")
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", dbUser, dbPassword, dbHost, dbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", dbUser, dbPassword, dbHost, dbName)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

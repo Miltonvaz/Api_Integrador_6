@@ -20,4 +20,5 @@ type Fermentation struct {
 	EthanolConcentration   float64   `json:"ethanol_concentration"`
 	FermentationEfficiency float64   `json:"fermentation_efficiency"`
 	FermentationRate       float64   `json:"fermentation_rate"`
+	Status                 *string   `json:"status"`
 }

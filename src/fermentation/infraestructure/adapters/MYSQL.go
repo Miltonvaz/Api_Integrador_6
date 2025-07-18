@@ -17,6 +17,7 @@ type MySQL struct {
 func NewMySQL(conn *sql.DB) domain.FermentationRepository {
 	return &MySQL{conn: conn}
 }
+
 func (m *MySQL) Save(f entities.Fermentation) (entities.Fermentation, error) {
 	if f.StartedAt.IsZero() {
 		f.StartedAt = time.Now()
@@ -26,14 +27,15 @@ func (m *MySQL) Save(f entities.Fermentation) (entities.Fermentation, error) {
 		operator_id, started_at, duration_hours, raw_material, sugar_concentration,
 		initial_volume, microorganism_category, microorganism_name, microorganism_quantity,
 		agitation_rpm, temperature, initial_ph, final_ph, ethanol_concentration,
-		fermentation_efficiency, fermentation_rate
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		fermentation_efficiency, fermentation_rate, status
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := m.conn.Exec(query,
 		f.OperatorID, f.StartedAt, f.DurationHours, f.RawMaterial, f.SugarConcentration,
 		f.InitialVolume, f.MicroorganismCategory, f.MicroorganismName, f.MicroorganismQuantity,
 		f.AgitationRPM, f.Temperature, f.InitialPH, f.FinalPH,
 		f.EthanolConcentration, f.FermentationEfficiency, f.FermentationRate,
+		f.Status,
 	)
 
 	if err != nil {
@@ -48,7 +50,7 @@ func (m *MySQL) Update(f entities.Fermentation) (entities.Fermentation, error) {
 		duration_hours = ?, raw_material = ?, sugar_concentration = ?, initial_volume = ?,
 		microorganism_category = ?, microorganism_name = ?, microorganism_quantity = ?,
 		agitation_rpm = ?, temperature = ?, initial_ph = ?, final_ph = ?,
-		ethanol_concentration = ?, fermentation_efficiency = ?, fermentation_rate = ?
+		ethanol_concentration = ?, fermentation_efficiency = ?, fermentation_rate = ?, status = ?
 		WHERE id = ? AND operator_id = ?`
 
 	_, err := m.conn.Exec(query,
@@ -56,6 +58,7 @@ func (m *MySQL) Update(f entities.Fermentation) (entities.Fermentation, error) {
 		f.MicroorganismCategory, f.MicroorganismName, f.MicroorganismQuantity,
 		f.AgitationRPM, f.Temperature, f.InitialPH, f.FinalPH,
 		f.EthanolConcentration, f.FermentationEfficiency, f.FermentationRate,
+		f.Status,
 		f.ID, f.OperatorID,
 	)
 
@@ -72,7 +75,7 @@ func (m *MySQL) GetByID(id, userID int) (entities.Fermentation, error) {
 	query := `SELECT id, operator_id, started_at, duration_hours, raw_material, sugar_concentration,
 		initial_volume, microorganism_category, microorganism_name, microorganism_quantity,
 		agitation_rpm, temperature, initial_ph, final_ph, ethanol_concentration,
-		fermentation_efficiency, fermentation_rate
+		fermentation_efficiency, fermentation_rate, status
 		FROM fermentation_records WHERE id = ? AND operator_id = ?`
 
 	err := m.conn.QueryRow(query, id, userID).Scan(
@@ -80,6 +83,7 @@ func (m *MySQL) GetByID(id, userID int) (entities.Fermentation, error) {
 		&f.InitialVolume, &f.MicroorganismCategory, &f.MicroorganismName, &f.MicroorganismQuantity,
 		&f.AgitationRPM, &f.Temperature, &f.InitialPH, &f.FinalPH,
 		&f.EthanolConcentration, &f.FermentationEfficiency, &f.FermentationRate,
+		&f.Status,
 	)
 
 	if err != nil {
@@ -96,7 +100,7 @@ func (m *MySQL) GetAll(userID int) ([]entities.Fermentation, error) {
 	query := `SELECT id, operator_id, started_at, duration_hours, raw_material, sugar_concentration,
 		initial_volume, microorganism_category, microorganism_name, microorganism_quantity,
 		agitation_rpm, temperature, initial_ph, final_ph, ethanol_concentration,
-		fermentation_efficiency, fermentation_rate
+		fermentation_efficiency, fermentation_rate, status
 		FROM fermentation_records WHERE operator_id = ?`
 
 	rows, err := m.conn.Query(query, userID)
@@ -114,6 +118,7 @@ func (m *MySQL) GetAll(userID int) ([]entities.Fermentation, error) {
 			&f.InitialVolume, &f.MicroorganismCategory, &f.MicroorganismName, &f.MicroorganismQuantity,
 			&f.AgitationRPM, &f.Temperature, &f.InitialPH, &f.FinalPH,
 			&f.EthanolConcentration, &f.FermentationEfficiency, &f.FermentationRate,
+			&f.Status,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning fermentation row: %v", err)
